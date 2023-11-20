@@ -12,17 +12,21 @@ jobs:
       - run: echo "This is a build step"      # similar to "script" in GitLab
 
   test:
+    needs: build
     runs-on: ubuntu-20.04
     steps:
       - run: echo "This is a test step"
 
   integration:
     runs-on: ubuntu-20.04
+    if: ${{ always() }}
+    needs: test
     steps:
       - run: echo "This is an integration step"
-#      - run: exit 1
+      - run: exit 1
 
   artifact:
+    needs: test
     runs-on: ubuntu-20.04
     steps:
       - run: echo "hello" > hello.txt
@@ -32,6 +36,7 @@ jobs:
           path: hello.txt
  
   prod:
+    needs: artifact
     runs-on: ubuntu-20.04
     steps:
       - run: echo "This is a deploy step"
